@@ -5,19 +5,27 @@
 ## Запуск проекта
 
 ### Установка и настройка Kafka
+Скачиваем и распаковываем Kafka 4.0.0
 ```bash
-# 1. Скачиваем и распаковываем Kafka 4.0.0
 wget https://downloads.apache.org/kafka/4.0.0/kafka_2.13-4.0.0.tgz
 tar -xzf kafka_2.13-4.0.0.tgz
 cd kafka_2.13-4.0.0
+```
 
-# Генерируем уникальный Cluster ID
+Дописываем в файл `config/server.properties` данные строчки:
+```
+node.id=1
+process.roles=broker,controller
+listeners=PLAINTEXT://:9092,CONTROLLER://:9093
+advertised.listeners=PLAINTEXT://localhost:9092
+controller.quorum.voters=1@localhost:9093
+log.dirs=/tmp/kafka-logs
+```
+
+Запускаем Kafka сервер
+```
 KAFKA_CLUSTER_ID="$(bin/kafka-storage.sh random-uuid)"
-
-# Форматируем хранилище
 bin/kafka-storage.sh format -t $KAFKA_CLUSTER_ID -c config/server.properties
-
-# 3. Запускаем Kafka сервер
 bin/kafka-server-start.sh config/server.properties
 ```
 
@@ -26,18 +34,17 @@ bin/kafka-server-start.sh config/server.properties
 git clone https://github.com/t1-workshops/workshop1.git
 cd workshop1
 
-# Сборка проекта
 ./gradlew build
 
 # Запуск (в разных терминалах)
-./gradlew runProducer  # Запуск продюсера
-./gradlew runConsumer  # Запуск консьюмера
+./gradlew runProducer
+./gradlew runConsumer
 
 # Или запуск вместе
 ./gradlew run
 ```
 
-## 🌡Примеры работы
+## Примеры работы
 
 ### Вывод продюсера
 ```
